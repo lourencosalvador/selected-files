@@ -1,22 +1,22 @@
-'use client'; // Add this line if it's not present
+'use client'; 
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 export default function Home() {
-  const [imageFile, setImageFile] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [vidoeFile, setVidoeFile] = useState<File | null>(null);
 
   function handleFileSelected(event: React.ChangeEvent<HTMLInputElement>) {
     const { files } = event.currentTarget;
     if (!files) return;
     const selectedFile = files[0];
-    setImageFile(selectedFile);
-    const reader = new FileReader();
-    reader.onload = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(selectedFile);
+    setVidoeFile(selectedFile);
   }
+
+ const previewURL = useMemo(() => {
+ if(!vidoeFile) return null;
+
+ return URL.createObjectURL(vidoeFile);
+ }, [vidoeFile]);
 
   return (
     <div className="bg-zinc-950 w-screen h-screen flex justify-center items-center">
@@ -25,8 +25,8 @@ export default function Home() {
       border-2 border-violet-600/50 duration-300 hover:border-violet-400/50 p-6 flex overflow-hidden justify-center items-center cursor-pointer"
       >
         <div className="size-auto flex items-center flex-col gap-3">
-          {imageFile ? (
-            <img src={imagePreview ?? ''} alt="Image preview" className=" h-full max-w-full" />
+          {vidoeFile ? (
+            <video src={previewURL ?? ''} controls={false}  className="pointer-events-none inset-0 absolute max-w-full" />
           ) : (
             <>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" className="size-6 text-violet-600">
@@ -40,8 +40,8 @@ export default function Home() {
 
         <input
           type="file"
-          id="image"
-          accept="image/*"
+          id="video"
+          accept="video/mp4"
           className="input-file"
           onChange={handleFileSelected}
         />
